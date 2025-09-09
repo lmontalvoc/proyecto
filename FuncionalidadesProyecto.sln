@@ -1,25 +1,43 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuncionalidadesProyecto", "FuncionalidadesProyecto\FuncionalidadesProyecto.csproj", "{6E62DD26-3EAD-470B-A2BF-574E5CCE9ADB}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6E62DD26-3EAD-470B-A2BF-574E5CCE9ADB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E62DD26-3EAD-470B-A2BF-574E5CCE9ADB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E62DD26-3EAD-470B-A2BF-574E5CCE9ADB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E62DD26-3EAD-470B-A2BF-574E5CCE9ADB}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {89DA7405-5CED-41F2-AF59-678CC78BAE6A}
-	EndGlobalSection
-EndGlobal
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace FuncionalidadesProyecto
+{
+    public class Viaje 
+    {
+        public int Id { get; set; }
+        public string Titulo { get; set; }
+        public string PaisDestino { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime FechaFin { get; set; }
+        public EstadoViaje Estado { get; set; } // Planificado, Completado
+        public string UserId { get; set; } 
+        public ApplicationUser User { get; set; }
+    }
+
+    public enum EstadoViaje
+    {
+        Planificado,
+        Completado
+    }
+
+    public class Pais
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string BanderaUrl { get; set; }
+    }
+
+    public class ApplicationUser : IdentityUser
+    {
+        public ICollection<UsuarioPaisFavorito> PaisesFavoritos { get; set; }
+    }
+
+    public class UsuarioPaisFavorito
+    {
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
+
+        public int PaisId { get; set; }
+        public Pais Pais { get; set; }
+    }
+}
