@@ -1,0 +1,43 @@
+using Microsoft.AspNetCore.Identity;
+
+namespace FuncionalidadesProyecto
+{
+    public class Viaje 
+    {
+        public int Id { get; set; }
+        public string Titulo { get; set; }
+        public string PaisDestino { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime FechaFin { get; set; }
+        public EstadoViaje Estado { get; set; } // Planificado, Completado
+        public string UserId { get; set; } 
+        public ApplicationUser User { get; set; }
+    }
+
+    public enum EstadoViaje
+    {
+        Planificado,
+        Completado
+    }
+
+    public class Pais
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string BanderaUrl { get; set; }
+    }
+
+    public class ApplicationUser : IdentityUser
+    {
+        public ICollection<UsuarioPaisFavorito> PaisesFavoritos { get; set; }
+    }
+
+    public class UsuarioPaisFavorito
+    {
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
+
+        public int PaisId { get; set; }
+        public Pais Pais { get; set; }
+    }
+}
