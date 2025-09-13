@@ -1,0 +1,87 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims; // Para obtener el UserId
+
+[Authorize]
+public class DashboardController : Controller
+{
+    private readonly ViajeService _viajeService;
+    private readonly PaisFavoritoService _paisFavoritoService;
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public DashboardController(ViajeService viajeService, PaisFavoritoService paisFavoritoService, UserManager<ApplicationUser> userManager)
+    {
+        _viajeService = viajeService;
+        _paisFavoritoService = paisFavoritoService;
+        _userManager = userManager;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Obtener el ID del usuario logueado
+
+        var totalPlanificados = await _viajeService.GetTotalViajesPlanificadosAsync(userId);
+        var totalCompletados = await _viajeService.GetTotalViajesCompletadosAsync(userId);
+        var paisesFavoritos = await _paisFavoritoService.GetPaisesFavoritosByUserIdAsync(userId);
+        var todosLosViajes = await _viajeService.GetViajesByUserIdAsync(userId); // Para el gráfico, si lo implementas
+
+        var viewModel = new DashboardViewModel
+        {
+            TotalViajesPlanificados = totalPlanificados,
+            TotalViajesCompletados = totalCompletados,
+            PaisesFavoritos = paisesFavoritos.ToList(),
+            ViajesPorEstado = todosLosViajes.GroupBy(v => v.Estado)
+                                            .ToDictionary(g => g.Key.ToString(), g => g.Count())
+        };
+
+        return View(viewModel);
+    }
+}
+
+// ViewModels/DashboardViewModel.cs
+public class DashboardViewModel
+{
+    public int TotalViajesPlanificados { get; set; }
+    public int TotalViajesCompletados { get; set; }
+    public List<Pais> PaisesFavoritos { get; set; }
+    public Dictionary<string, int> ViajesPorEstado { get; set; } // Para el gráfico
+}
+
+
+// Controllers/PaisesFavoritosController.cs
+[Authorize]
+public class PaisesFavoritosController : Controller
+{
+    private readonly PaisFavoritoService _paisFavoritoService;
+    private readonly PaisService _paisService; // Servicio para detalles del país
+
+    public PaisesFavoritosController(PaisFavoritoService paisFavoritoService, PaisService paisService)
+    {
+        _paisFavoritoService = paisFavoritoService;
+        _paisService = paisService;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var paisesFavoritos = await _paisFavoritoService.GetPaisesFavoritosByUserIdAsync(userId);
+        return View(paisesFavoritos);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add(int paisId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        await _paisFavoritoService.AddPaisFavoritoAsync(userId, paisId);
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Remove(int paisId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        await _paisFavoritoService.RemovePaisFavoritoAsync(userId, paisId);
+        return RedirectToAction(nameof(Index));
+    }
+}
