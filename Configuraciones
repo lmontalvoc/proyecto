@@ -1,0 +1,15 @@
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<ViajeService>();
+builder.Services.AddScoped<PaisFavoritoService>();
+builder.Services.AddScoped<PaisService>(); // Asegúrate de tener un PaisService para obtener datos de países
+
+var app = builder.Build();
