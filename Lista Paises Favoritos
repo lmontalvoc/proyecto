@@ -1,0 +1,34 @@
+@model IEnumerable<YourNamespace.Models.Pais>
+@{
+    ViewData["Title"] = "Mis Países Favoritos";
+}
+
+<h1>Mis Países Favoritos</h1>
+
+@if (Model != null && Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var pais in Model)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <img src="@pais.BanderaUrl" alt="Bandera de @pais.Nombre" style="width: 40px; margin-right: 15px;" />
+                    <h5>@pais.Nombre</h5>
+                </div>
+                <div>
+                    <a asp-controller="Paises" asp-action="Details" asp-route-id="@pais.Id" class="btn btn-sm btn-info me-2">Ver Detalles</a>
+                    <form asp-controller="PaisesFavoritos" asp-action="Remove" method="post" style="display:inline;">
+                        <input type="hidden" name="paisId" value="@pais.Id" />
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar de Favoritos</button>
+                    </form>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <div class="alert alert-info mt-4" role="alert">
+        Aún no has añadido ningún país a tus favoritos. ¡Explora y marca tus destinos soñados!
+    </div>
+}
