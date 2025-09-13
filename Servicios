@@ -1,0 +1,73 @@
+public class ViajeService
+{
+    private readonly ApplicationDbContext _context;
+
+    public ViajeService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Viaje>> GetViajesByUserIdAsync(string userId)
+    {
+        return await _context.Viajes
+                             .Where(v => v.UserId == userId)
+                             .ToListAsync();
+    }
+
+    public async Task<int> GetTotalViajesPlanificadosAsync(string userId)
+    {
+        return await _context.Viajes
+                             .CountAsync(v => v.UserId == userId && v.Estado == EstadoViaje.Planificado);
+    }
+
+    public async Task<int> GetTotalViajesCompletadosAsync(string userId)
+    {
+        return await _context.Viajes
+                             .CountAsync(v => v.UserId == userId && v.Estado == EstadoViaje.Completado);
+    }
+}
+
+
+public class PaisFavoritoService
+{
+    private readonly ApplicationDbContext _context;
+
+    public PaisFavoritoService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Pais>> GetPaisesFavoritosByUserIdAsync(string userId)
+    {
+        return await _context.UsuarioPaisesFavoritos
+                             .Where(upf => upf.UserId == userId)
+                             .Select(upf => upf.Pais)
+                             .ToListAsync();
+    }
+
+    public async Task<bool> AddPaisFavoritoAsync(string userId, int paisId)
+    {
+        var existing = await _context.UsuarioPaisesFavoritos
+                                     .FirstOrDefaultAsync(upf => upf.UserId == userId && upf.PaisId == paisId);
+        if (existing == null)
+        {
+            _context.UsuarioPaisesFavoritos.Add(new UsuarioPaisFavorito { UserId = userId, PaisId = paisId });
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        return false; // Si favorito
+    }
+
+    public async Task<bool> RemovePaisFavoritoAsync(string userId, int paisId)
+    {
+        var fav = await _context.UsuarioPaisesFavoritos
+                                .FirstOrDefaultAsync(upf => upf.UserId == userId && upf.PaisId == paisId);
+        if (fav != null)
+        {
+            _context.UsuarioPaisesFavoritos.Remove(fav);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        return false; // No favorito
+    }
+}
