@@ -1,0 +1,83 @@
+@model YourNamespace.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1>¡Bienvenido a tu Dashboard!</h1>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Resumen de Viajes</div>
+            <div class="card-body">
+                <p>Viajes Planificados: <strong>@Model.TotalViajesPlanificados</strong></p>
+                <p>Viajes Completados: <strong>@Model.TotalViajesCompletados</strong></p>
+                <canvas id="viajesChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Mis Países Favoritos</div>
+            <div class="card-body">
+                @if (Model.PaisesFavoritos != null && Model.PaisesFavoritos.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var pais in Model.PaisesFavoritos)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <img src="@pais.BanderaUrl" alt="Bandera de @pais.Nombre" style="width: 30px; margin-right: 10px;" />
+                                @pais.Nombre
+                                <a asp-controller="Paises" asp-action="Details" asp-route-id="@pais.Id" class="btn btn-sm btn-info">Ver Detalles</a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>Aún no tienes países favoritos. ¡Empieza a explorar!</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('viajesChart').getContext('2d');
+            var viajesChart = new Chart(ctx, {
+                type: 'pie', // Puedes cambiarlo a 'bar' o 'doughnut'
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.ViajesPorEstado.Keys)),
+                    datasets: [{
+                        label: 'Viajes por Estado',
+                        data: @Html.Raw(Json.Serialize(Model.ViajesPorEstado.Values)),
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.6)', // Azul para Planificado
+                            'rgba(75, 192, 192, 0.6)'  // Verde para Completado
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución de Viajes'
+                        }
+                    }
+                },
+            });
+        });
+    </script>
+}
