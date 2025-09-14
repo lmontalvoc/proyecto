@@ -1,0 +1,114 @@
+{
+  "info": {
+    "name": "ExploradorDePaises",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Obtener todos los países",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/paises",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "paises"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Obtener país por código",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/paises/COL",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "paises",
+            "COL"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Buscar país por nombre",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/paises/buscar/hon",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "paises",
+            "buscar",
+            "hon"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Agregar país favorito",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"usuario\": \"juan\",\n    \"codigoPais\": \"COL\"\n}"
+        }
+      },
+      "url": {
+        "raw": "{{baseUrl}}/api/paises/favoritos",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "api",
+          "paises",
+          "favoritos"
+        ]
+      }
+    },
+    {
+      "name": "Obtener favoritos de usuario",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/paises/favoritos/juan",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "paises",
+            "favoritos",
+            "juan"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:5001"
+    }
+  ]
+}
